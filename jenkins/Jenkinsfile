@@ -2,6 +2,7 @@
 node {
     def VOLUME = "${pwd()}/sources:/src"
     def IMAGE = 'cdrx/pyinstaller-linux:python2'
+    def timeoutInMinutes = 1 // Waktu jeda dalam menit
 
     try {
         stage('Build') {
@@ -24,6 +25,12 @@ node {
                 sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
                 archiveArtifacts artifacts: "${BUILD_ID}/sources/dist/add2vals", allowEmptyArchive: true
                 sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
+            }
+
+            // Mekanisme input message untuk memberikan jeda eksekusi
+            timeout(time: timeoutInMinutes, unit: 'MINUTES') {
+                // Simulasi berjalan selama 1 menit
+                sh "sleep ${timeoutInMinutes * 60}"
             }
         }
     } catch (Exception e) {
