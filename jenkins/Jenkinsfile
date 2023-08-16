@@ -12,10 +12,24 @@ node {
         junit 'test-reports/results.xml'
     }
 
-    stage('Deploy') {
-        docker.image('cdrx/pyinstaller-linux:python2').inside {
-            sh 'pyinstaller --onefile sources/add2vals.py'
-            archiveArtifacts 'sources/dist/add2vals'
+    stage('Deliver') {
+        def VOLUME = "${WORKSPACE}/sources:/src"
+        def IMAGE = 'cdrx/pyinstaller-linux:python2'
+
+        try {
+            dir("${BUILD_ID}") {
+                unstash name: 'compiled-results'
+                sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
+            }
+        } catch (Exception e) {
+            currentBuild.result = 'FAILURE'
+            throw e
+        } finally {
+            dir("${BUILD_ID}") {
+                sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
+            }
         }
+
+        step([$class: 'ArtifactArchiver', artifacts: "${BUILD_ID}/sources/dist/add2vals"])
     }
 }
