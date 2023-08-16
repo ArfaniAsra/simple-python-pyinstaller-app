@@ -19,6 +19,18 @@ node {
             junit 'test-reports/results.xml'
         }
 
+        stage('Manual Approval') {
+            input message: 'Lanjutkan ke tahap Deploy?', submitter: 'user', parameters: [
+                [$class: 'ChoiceParameterDefinition', choices: 'Proceed\nAbort', description: 'Pilih aksi', name: 'ACTION']
+            ]
+
+            def action = env.ACTION.trim()
+            if (action == 'Abort') {
+                currentBuild.result = 'ABORTED'
+                error("Pipeline execution aborted by user")
+            }
+        }
+
         stage('Deploy') {
             dir("${BUILD_ID}") {
                 unstash name: 'compiled-results'
