@@ -31,11 +31,10 @@ node {
                 sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
             }
 
-            // Mekanisme input message untuk memberikan jeda eksekusi
-            timeout(time: timeoutInMinutes, unit: 'MINUTES') {
-                // Simulasi berjalan selama 1 menit
-                sh "sleep ${timeoutInMinutes * 60}"
-            }
+             // Mekanisme input message untuk memberikan jeda eksekusi
+            sh "docker run -d -v ${VOLUME} ${IMAGE} 'python add2vals.py'"
+            sh "sleep ${timeoutInMinutes * 60}" // Jeda selama 1 menit
+            sh "docker ps -a -q --filter ancestor=${IMAGE} | xargs docker rm -f" // Menghapus kontainer setelah jeda
         }
     } catch (Exception e) {
         currentBuild.result = 'UNSTABLE'
