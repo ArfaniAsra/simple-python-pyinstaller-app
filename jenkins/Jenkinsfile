@@ -24,7 +24,7 @@ node {
 
         node {
             stage('Deploy') {
-                sh "mkdir -p ${BUILD_ID}"
+                // sh "mkdir -p ${BUILD_ID}"
                 stash name: 'compiled-results'
                 docker.image(IMAGE).inside {
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
