@@ -6,7 +6,6 @@ node {
     stage('Build') {
         docker.image(IMAGE_PYTHON).inside {
             sh 'python -m py_compile sources/add2vals.py sources/calc.py'
-            stash name: 'compiled-results', includes: 'sources/*.py*'
         }
     }
 
@@ -24,8 +23,6 @@ node {
 
         node {
             stage('Deploy') {
-                // sh "mkdir -p ${BUILD_ID}"
-                stash name: 'compiled-results'
                 docker.image(IMAGE).inside {
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
                 }
