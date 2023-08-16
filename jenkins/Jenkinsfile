@@ -17,13 +17,13 @@ node {
         junit 'test-reports/results.xml'
     }
 
-    stage('Deliver') {
+    stage('Deploy') {
         def VOLUME = "${pwd()}/sources:/src"
         def BUILD_ID = env.BUILD_ID
         def IMAGE = IMAGE_PYINSTALLER
 
         node {
-            stage('Deliver') {
+            stage('Deploy') {
                 sh "mkdir -p ${BUILD_ID}"
                 stash name: 'compiled-results'
                 docker.image(IMAGE).inside {
@@ -31,7 +31,7 @@ node {
                 }
             }
 
-            stage('Post-Deliver') {
+            stage('Post-Deploy') {
                 sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                 archiveArtifacts "${BUILD_ID}/sources/dist/add2vals"
             }
