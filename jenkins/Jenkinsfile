@@ -20,15 +20,7 @@ node {
         }
 
         stage('Manual Approval') {
-            input message: 'Lanjutkan ke tahap Deploy?', submitter: 'user', parameters: [
-                [$class: 'ChoiceParameterDefinition', choices: 'Proceed\nAbort', description: 'Pilih aksi', name: 'ACTION']
-            ]
-
-            def action = env.ACTION.trim()
-            if (action == 'Abort') {
-                currentBuild.result = 'ABORTED'
-                error("Pipeline execution aborted by user")
-            }
+            input message: 'Lanjutkan ke tahap Deploy? (Klik "Proceed" untuk mengakhiri)'
         }
 
         stage('Deploy') {
