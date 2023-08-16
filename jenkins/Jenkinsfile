@@ -12,7 +12,7 @@ node {
         junit 'test-reports/results.xml'
     }
 
-    stage('Deliver') {
+    stage('Deploy') {
         def VOLUME = "${WORKSPACE}/sources:/src"
         def IMAGE = 'cdrx/pyinstaller-linux:python2'
 
